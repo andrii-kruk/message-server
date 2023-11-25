@@ -4,7 +4,9 @@ const UserSchema = new Schema({
   email: { type: String, unique: true, require: true },
   password: { type: String, require: true },
   verify: { type: Boolean, default: false },
-  verificationLink: { type: String },
+  verificationCode: { type: String },
 });
 
-export const User = model("User", UserSchema);
+const User = model("User", UserSchema);
+
+export default User;
