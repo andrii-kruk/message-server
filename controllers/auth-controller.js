@@ -1,4 +1,6 @@
 import ctrlWrapper from "../decorators/ctrlWrapper.js";
+import createUserDto from "../dtos/user-dto.js";
+import User from "../models/user-model.js";
 import { authService } from "../service/index.js";
 
 const { CLIENT_URL } = process.env;
@@ -46,7 +48,13 @@ const refresh = async (req, res) => {
 };
 
 const getCurrent = async (req, res) => {
-  res.json(["123", "456"]);
+  const user = await User.findById(req.user.id);
+
+  if (!user) throw HttpError(404, "User not found.");
+
+  const userDto = createUserDto(user);
+
+  res.json(userDto);
 };
 
 export default {

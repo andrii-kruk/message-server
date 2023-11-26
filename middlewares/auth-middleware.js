@@ -1,24 +1,23 @@
 import { HttpError } from "../helpers/index.js";
-import jwt from "jsonwebtoken";
-import { User } from "../models/index.js";
 
-const { JWT_REFRESH_SECRET } = process.env;
+import { tokenService } from "../service/index.js";
 
 const authMiddleware = async (req, res, next) => {
-  const { authorization } = req.headers;
-
-  const [bearer, accessToken] = authorization.split(" ");
-  if (bearer !== "Bearer") throw HttpError(401);
   try {
-    const { id } = jwt.verify(accessToken, JWT_REFRESH_SECRET);
-    const user = await User.findById(id);
+    const { authorization } = req.headers;
+    if (!authorization) throw HttpError(401);
 
-    if (!user || !user.refreshToken) throw HttpError(401);
+    const accessToken = authorization.split(" ")[1];
+    if (!accessToken) throw HttpError(401);
 
-    req.user = user;
+    const userData = await tokenService.validateAccessToken(accessToken);
+
+    if (!userData) throw HttpError(401);
+
+    req.user = userData;
     next();
   } catch (error) {
-    throw HttpError(401);
+    return next(HttpError(401));
   }
 };
 
