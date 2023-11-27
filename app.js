@@ -7,13 +7,15 @@ import "dotenv/config";
 
 import authRouter from "./routes/auth-router.js";
 
+const { CLIENT_URL } = process.env;
+
 const app = express();
 
 const formatsLogger = app.get("env") === "development" ? "dev" : "short";
 
 app.use(logger(formatsLogger));
 app.use(cookieParser());
-app.use(cors());
+app.use(cors({ credentials: true, origin: CLIENT_URL }));
 
 app.use(express.json());
 app.use(express.static("public"));
